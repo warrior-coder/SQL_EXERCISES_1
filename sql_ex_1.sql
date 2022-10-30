@@ -70,14 +70,23 @@ WHERE printer.model IN (
     WHERE product.maker = 'B'
 );
 
-/* --- 8. Find the makers producing PCs but not laptops. */
-SELECT product.maker
+/* 8. Find the makers producing PCs but not laptops. */
+SELECT product.maker 
 FROM product
-JOIN pc ON product.model = pc.model
-EXCEPT 
-SELECT product.maker
+WHERE product.type IN ('PC')
+EXCEPT
+SELECT product.maker 
+FROM product 
+WHERE product.type IN ('Laptop');
+
+/* 8. */
+SELECT DISTINCT product.maker
 FROM product
-JOIN laptop ON product.model = laptop.model;
+WHERE product.type = 'PC' AND product.maker NOT IN (
+	SELECT product.maker
+	FROM product
+	WHERE product.type = 'Laptop'
+);
 
 /* 9. Find the makers of PCs with a processor speed of 450 MHz or more. Result set: maker. */
 SELECT DISTINCT product.maker

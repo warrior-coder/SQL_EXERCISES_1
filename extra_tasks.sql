@@ -56,15 +56,22 @@ FROM printer
 WHERE color = 'y' AND type = 'Laser';
 
 -- e) Find those makers producing laptops but not PCs.
-((SELECT DISTINCT maker
-FROM product, laptop
-WHERE product.model = laptop.model)
+SELECT product.maker 
+FROM product 
+WHERE product.type IN ('Laptop');
+EXCEPT
+SELECT product.maker 
+FROM product
+WHERE product.type IN ('PC')
 
-EXCEPT ALL
-
-(SELECT DISTINCT maker
-FROM product, pc
-WHERE product.model = pc.model));
+-- e)
+SELECT DISTINCT product.maker
+FROM product
+WHERE product.type = 'Laptop' AND product.maker NOT IN (
+	SELECT product.maker
+	FROM product
+	WHERE product.type = 'PC'
+);
 
 -- f) Find those hd that occur in two or more PCs.
 SELECT hd
