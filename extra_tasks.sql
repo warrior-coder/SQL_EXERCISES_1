@@ -62,7 +62,7 @@ WHERE product.type IN ('Laptop');
 EXCEPT
 SELECT product.maker 
 FROM product
-WHERE product.type IN ('PC')
+WHERE product.type IN ('PC');
 
 -- e)
 SELECT DISTINCT product.maker
@@ -77,4 +77,4 @@ WHERE product.type = 'Laptop' AND product.maker NOT IN (
 SELECT hd
 FROM pc
 GROUP BY hd
-HAVING COUNT(hd) >= 2
+HAVING COUNT(hd) >= 2;
