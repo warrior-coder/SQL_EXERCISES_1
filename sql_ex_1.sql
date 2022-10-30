@@ -1,35 +1,35 @@
-/* 1. Найдите номер модели, скорость и размер жесткого диска для всех ПК стоимостью менее 500 дол. Вывести: model, speed и hd */
+/* 1. Find the model number, speed and hard drive capacity for all the PCs with prices below $500. Result set: model, speed, hd. */
 SELECT model, speed, dh
 FROM pc
 WHERE price < 500;
 
-/* 2. Найдите производителей принтеров. Вывести: maker */
+/* 2. List all printer makers. Result set: maker. */
 SELECT DISTINCT maker
 FROM product
 WHERE type = 'Printer';
 
-/* 3. Найдите номер модели, объем памяти и размеры экранов ПК-блокнотов, цена которых превышает 1000 дол. */
+/* 3. Find the model number, RAM and screen size of the laptops with prices over $1000. */
 SELECT model, ram, screen
 FROM laptop
 WHERE price > 1000;
 
-/* 4. Найдите все записи таблицы Printer для цветных принтеров. */
+/* 4. Find all records from the Printer table containing data about color printers. */
 SELECT *
 FROM printer
 WHERE color = 'y';
 
-/* 5. Найдите номер модели, скорость и размер жесткого диска ПК, имеющих 12x или 24x CD и цену менее 600 дол. */
+/* 5. Find the model number, speed and hard drive capacity of PCs cheaper than $600 having a 12x or a 24x CD drive. */
 SELECT model, speed, hd
 FROM pc 
 WHERE (price < 600) AND cd IN ('12x', '24x');
 
-/* 6. Для каждого производителя, выпускающего ПК-блокноты c объёмом жесткого диска не менее 10 Гбайт, найти скорости таких ПК-блокнотов. Вывод: производитель, скорость. */
+/* 6. For each maker producing laptops with a hard drive capacity of 10 Gb or higher, find the speed of such laptops. Result set: maker, speed. */
 SELECT DISTINCT product.maker, laptop.speed
 FROM product
 JOIN laptop ON product.model = laptop.model
 WHERE laptop.hd >= 10;
 
-/* 7. Найдите номера моделей и цены всех имеющихся в продаже продуктов (любого типа) производителя B (латинская буква). */
+/* 7. Get the models and prices for all commercially available products (of any type) produced by maker B. */
 SELECT pc.model, pc.price 
 FROM pc
 LEFT JOIN product ON product.model = pc.model
@@ -45,7 +45,7 @@ FROM printer
 LEFT JOIN product ON product.model = printer.model
 WHERE product.maker = 'B';
 
-/* -- 8. Найдите производителя, выпускающего ПК, но не ПК-блокноты. */
+/* --- 8. Find the makers producing PCs but not laptops. */
 SELECT product.maker
 FROM product
 JOIN pc ON product.model = pc.model
@@ -54,13 +54,13 @@ SELECT product.maker
 FROM product
 JOIN laptop ON product.model = laptop.model;
 
-/* 9. Найдите производителей ПК с процессором не менее 450 Мгц. Вывести: Maker */
+/* 9. Find the makers of PCs with a processor speed of 450 MHz or more. Result set: maker. */
 SELECT DISTINCT product.maker
 FROM product
 JOIN pc ON product.model = pc.model
 WHERE pc.speed >= 450;
 
-/* 10. Найдите модели принтеров, имеющих самую высокую цену. Вывести: model, price */
+/* 10. Find the printer models having the highest price. Result set: model, price. */
 SELECT printer.model, printer.price
 FROM printer
 WHERE printer.price = (
@@ -68,16 +68,16 @@ WHERE printer.price = (
     FROM printer
 );
 
-/* 11. Найдите среднюю скорость ПК. */
+/* 11. Find out the average speed of PCs. */
 SELECT AVG(speed)
 FROM pc;
 
-/* 12. Найдите среднюю скорость ПК-блокнотов, цена которых превышает 1000 дол. */
+/* 12. Find out the average speed of the laptops priced over $1000. */
 SELECT AVG(speed) 
 FROM laptop
 WHERE price > 1000;
 
-/* 13. Найдите среднюю скорость ПК, выпущенных производителем A. */
+/* 13. Find out the average speed of the PCs produced by maker A. */
 SELECT AVG(t1.speed)
 FROM (
     SELECT pc.speed
@@ -86,4 +86,4 @@ FROM (
     WHERE product.maker = 'A'
 ) AS t1;
 
-/* 14. Найдите класс, имя и страну для кораблей из таблицы Ships, имеющих не менее 10 орудий. */
+
