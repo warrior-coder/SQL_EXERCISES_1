@@ -76,20 +76,42 @@ WHERE printer.model IN (
 -- 8. Find the makers producing PCs but not laptops.
 SELECT product.maker 
 FROM product
-WHERE product.type IN ('PC')
+WHERE product.type = 'PC'
 EXCEPT
 SELECT product.maker 
 FROM product 
-WHERE product.type IN ('Laptop');
+WHERE product.type = 'Laptop';
 
 -- 8.
-SELECT DISTINCT product.maker
-FROM product
-WHERE product.type = 'PC' AND product.maker NOT IN (
+SELECT DISTINCT p.maker
+FROM product AS p
+WHERE p.type = 'PC' AND p.maker NOT IN (
 	SELECT product.maker
 	FROM product
 	WHERE product.type = 'Laptop'
 );
+
+-- 8.
+SELECT DISTINCT p.maker
+FROM product AS p
+WHERE p.type = 'PC' AND NOT EXISTS (
+    SELECT product.maker 
+    FROM product
+    WHERE product.type = 'Laptop' AND product.maker = p.maker
+);
+
+-- 8.
+SELECT DISTINCT p.maker 
+FROM product AS p 
+WHERE (
+    SELECT COUNT(1) 
+    FROM product 
+    WHERE product.type = 'PC' AND product.maker = p.maker
+) > 0 AND (
+    SELECT COUNT(1) 
+    FROM product
+    WHERE product.type = 'Laptop' AND product.maker = p.maker
+) = 0;
 
 -- 9. Find the makers of PCs with a processor speed of 450 MHz or more.
 -- Result set: maker.
@@ -106,6 +128,14 @@ WHERE printer.price = (
     SELECT MAX(printer.price)
     FROM printer
 );
+
+-- 10.
+SELECT printer.model, printer.price
+FROM printer, (
+    SELECT MAX(price) AS max_price  
+    FROM printer
+) AS t1 
+WHERE price = t1.max_price;
 
 -- 11. Find out the average speed of PCs.
 SELECT AVG(speed)
@@ -133,12 +163,12 @@ GROUP BY hd
 HAVING COUNT(hd) >= 2;
 
 -- 15.
-SELECT DISTINCT t1.hd 
-FROM pc AS t1
+SELECT DISTINCT p.hd 
+FROM pc AS p
 WHERE EXISTS (
     SELECT * 
     FROM pc 
-    WHERE pc.hd = t1.hd AND pc.code != t1.code
+    WHERE pc.hd = p.hd AND pc.code != p.code
 );
 
 -- 15.
