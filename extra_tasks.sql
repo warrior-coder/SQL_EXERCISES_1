@@ -73,8 +73,23 @@ WHERE product.type = 'Laptop' AND product.maker NOT IN (
 	WHERE product.type = 'PC'
 );
 
--- f) Find those hd that occur in two or more PCs.
+-- f) Find those hd sizes that occur in two or more PCs.
 SELECT hd
 FROM pc
 GROUP BY hd
 HAVING COUNT(hd) >= 2;
+
+-- f)
+SELECT DISTINCT t1.hd 
+FROM pc AS t1
+WHERE EXISTS (
+    SELECT * 
+    FROM pc 
+    WHERE pc.hd = t1.hd AND pc.code != t1.code
+);
+
+-- f)
+SELECT DISTINCT pc1.hd 
+FROM pc AS pc1, pc AS pc2 
+WHERE pc1.hd = pc2.hd AND pc1.code != pc2.code;
+

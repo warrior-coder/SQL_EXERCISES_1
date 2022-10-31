@@ -132,5 +132,17 @@ FROM pc
 GROUP BY hd
 HAVING COUNT(hd) >= 2;
 
+-- 15.
+SELECT DISTINCT t1.hd 
+FROM pc AS t1
+WHERE EXISTS (
+    SELECT * 
+    FROM pc 
+    WHERE pc.hd = t1.hd AND pc.code != t1.code
+);
 
+-- 15.
+SELECT DISTINCT pc1.hd 
+FROM pc AS pc1, pc AS pc2 
+WHERE pc1.hd = pc2.hd AND pc1.code != pc2.code;
 
