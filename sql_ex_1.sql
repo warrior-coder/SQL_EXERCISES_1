@@ -176,3 +176,73 @@ SELECT DISTINCT pc1.hd
 FROM pc AS pc1, pc AS pc2 
 WHERE pc1.hd = pc2.hd AND pc1.code != pc2.code;
 
+-- 16. Get pairs of PC models with identical speeds and the same RAM capacity.
+-- Each resulting pair should be displayed only once, i.e. (i, j) but not (j, i).
+-- Result set: model with the bigger number, model with the smaller number, speed, and RAM.
+SELECT DISTINCT pc1.model, pc2.model, pc1.speed, pc1.ram
+FROM pc AS pc1, pc AS pc2
+WHERE pc1.model > pc2.model AND pc1.speed = pc2.speed AND pc1.ram = pc2.ram;
+
+-- 17. Get the laptop models that have a speed smaller than the speed of any PC.
+-- Result set: type, model, speed.
+SELECT DISTINCT 'Laptop', laptop.model, laptop.speed
+FROM laptop, pc
+WHERE laptop.speed < ALL(
+    SELECT pc.speed FROM pc
+);
+
+-- 18. Find the makers of the cheapest color printers.
+-- Result set: maker, price.
+SELECT DISTINCT product.maker, color_printer.price
+FROM (
+    SELECT *
+    FROM printer
+    WHERE printer.color = 'y'
+) AS color_printer
+JOIN product ON color_printer.model = product.model
+WHERE color_printer.price = (
+    SELECT MIN(price)
+    FROM printer
+    WHERE color = 'y'
+);
+
+-- 19. For each maker having models in the Laptop table, find out the average screen size of the laptops he produces.
+-- Result set: maker, average screen size.
+SELECT product.maker, AVG(laptop.screen)
+FROM laptop
+JOIN product ON laptop.model = product.model
+GROUP BY product.maker;
+
+-- 20. Find the makers producing at least three distinct models of PCs.
+-- Result set: maker, number of PC models.
+    SELECT product.maker, COUNT(product.model)
+    FROM product
+    WHERE product.type = 'pc'
+    GROUP BY product.maker
+    HAVING COUNT(product.model) >= 3;
+
+-- 21. Find out the maximum PC price for each maker having models in the PC table.
+-- Result set: maker, maximum price.
+SELECT product.maker, MAX(pc.price)
+FROM product
+JOIN pc ON product.model = pc.model
+GROUP BY product.maker;
+
+-- 22. For each value of PC speed that exceeds 600 MHz, find out the average price of PCs with identical speeds.
+-- Result set: speed, average price.
+SELECT pc.speed, AVG(pc.price)
+FROM pc
+WHERE pc.speed > 600
+GROUP BY pc.speed;
+
+-- 23. Get the makers producing both PCs having a speed of 750 MHz or higher and laptops with a speed of 750 MHz or higher.
+-- Result set: maker
+SELECT product.maker
+FROM product
+JOIN pc ON product.model = pc.model
+WHERE pc.speed >= 750
+INTERSECT
+SELECT product.maker
+FROM product
+JOIN laptop ON product.model = laptop.model
+WHERE laptop.speed >= 750;
