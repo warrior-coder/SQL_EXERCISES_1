@@ -246,3 +246,114 @@ SELECT product.maker
 FROM product
 JOIN laptop ON product.model = laptop.model
 WHERE laptop.speed >= 750;
+
+-- 24. List the models of any type having the highest price of all products present in the database.
+SELECT t1.model
+FROM (
+    SELECT model, price FROM pc
+    UNION
+    SELECT model, price FROM laptop
+    UNION
+    SELECT model, price FROM printer
+) AS t1
+WHERE t1.price = (
+    SELECT MAX(t2.price)
+    FROM (
+        SELECT model, price FROM pc
+        UNION
+        SELECT model, price FROM laptop
+        UNION
+        SELECT model, price FROM printer
+    ) AS t2
+);
+
+-- 24.
+WITH t1 AS (
+    SELECT model, price FROM pc
+    UNION
+    SELECT model, price FROM laptop
+    UNION
+    SELECT model, price FROM printer
+)
+SELECT t1.model
+FROM t1
+WHERE t1.price = (
+    SELECT MAX(t1.price) FROM t1
+);
+
+-- 25. Find the printer makers also producing PCs with the lowest RAM capacity and the highest processor speed of all PCs having the lowest RAM capacity.
+-- Result set: maker.
+SELECT DISTINCT product.maker FROM product
+JOIN pc ON product.model = pc.model
+WHERE pc.ram = (
+    SELECT MIN(ram) FROM pc
+) AND pc.speed = (
+    SELECT MAX(speed) FROM pc
+    WHERE ram = (
+        SELECT MIN(ram) FROM pc
+    )
+) AND product.maker IN (
+    SELECT maker FROM product
+    WHERE type = 'printer'
+);
+
+-- 26. Find out the average price of PCs and laptops produced by maker A.
+-- Result set: one overall average price for all items.
+-- Hint: UNION excludes duplicate rows.
+SELECT AVG(t1.price)
+FROM (
+    SELECT laptop.price
+    FROM laptop
+    JOIN product ON laptop.model = product.model
+    WHERE product.maker = 'A'
+    UNION ALL
+    SELECT pc.price
+    FROM pc
+    JOIN product ON pc.model = product.model
+    WHERE product.maker = 'A'
+) AS t1;
+
+-- 26.
+SELECT AVG(t1.price)
+FROM (
+    SELECT laptop.price, product.maker 
+    FROM laptop
+    JOIN product ON laptop.model = product.model
+    UNION ALL
+    SELECT pc.price, product.maker
+    FROM pc
+    JOIN product ON pc.model = product.model
+) AS t1
+WHERE t1.maker = 'A';
+
+-- 27. Find out the average hard disk drive capacity of PCs produced by makers who also manufacture printers.
+-- Result set: maker, average HDD capacity.
+SELECT product.maker, AVG(pc.hd)
+FROM product
+JOIN pc ON product.model = pc.model
+WHERE product.maker IN (
+    SELECT maker
+    FROM product
+    WHERE type = 'printer'
+)
+GROUP BY product.maker;
+
+-- 28. Using Product table, find out the number of makers who produce only one model.
+SELECT COUNT(*)
+FROM (
+    SELECT product.maker, COUNT(product.model) AS model_count
+    FROM product
+    GROUP BY product.maker
+    HAVING COUNT(product.model) = 1
+) AS t1;
+
+-- 35. Find models in the Product table consisting either of digits only or Latin letters (A-Z, case insensitive) only.
+-- Result set: model, type.
+SELECT model, type
+FROM product
+WHERE model NOT LIKE '%[^0-9]%' OR model NOT LIKE '%[^a-z]%';
+
+-- 35.
+SELECT model, type
+FROM product
+WHERE model LIKE REPLICATE('[0-9]', LEN(model)) OR model LIKE REPLICATE('[a-z]', LEN(model));
